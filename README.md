@@ -8,14 +8,19 @@ The game itself is **not included**. You need your own working game folder (the 
 
 ## Quick start
 
-1. Copy your game folder to the device, e.g. `/home/steamos/Games/SP Football Life 2026/`.
+1. Copy your game folder to one of these places (the script looks there; it does not copy the game for you):
+   - **Internal memory, or a microSD card that SteamOS itself boots from:** `~/Games/SP Football Life 2026/`
+     (e.g. `/home/steamos/Games/SP Football Life 2026/`)
+   - **A microSD card used only for storage (not a bootable SteamOS card):**
+     `<card>/Non-Steam Games/SP Football Life 2026/`, e.g. `/run/media/steamos/MicroSD/Non-Steam Games/SP Football Life 2026/`
 2. Copy this whole folder (it must keep `install-spfl26.sh`, `spfl26-settings.sh` and `artwork/` together) to the device.
 3. Switch to **Desktop Mode**, open Konsole in that folder and run:
    ```
    chmod +x install-spfl26.sh
-   ./install-spfl26.sh "/home/steamos/Games/SP Football Life 2026"
+   ./install-spfl26.sh
    ```
-   (If the game is in the default `~/Games/SP Football Life 2026`, no argument is needed.)
+   It finds the game in either place (if it is in both, it asks `1` or `2`). Game somewhere else? Pass the folder:
+   `./install-spfl26.sh "/path/to/SP Football Life 2026"`.
 4. When it asks, let it close Steam (needed to add the Game Mode shortcuts).
 5. Switch to Game Mode and start **SP Football Life 2026** from *Library > Non-Steam*, or double-click the Desktop icon.
 
@@ -23,6 +28,13 @@ You also get a second shortcut, **SP Football Life 2026 - Settings**, to change 
 (see "Changing settings" below).
 
 The script is safe to run again. It needs internet once (about 450 MB download) and about 3 GB of free space.
+
+### Moved the game folder?
+
+The launcher and shortcuts point to the folder the script found, so after moving the game (e.g. from internal
+memory to the microSD card) it won't start. Run `./install-spfl26.sh` again: it finds the new place and fixes the
+launcher, Desktop icons and Steam shortcuts. Proton and the Wine prefix stay in internal memory and your settings
+are kept. With the game on a storage microSD card, the card must be inserted to play.
 
 ## Requirements
 

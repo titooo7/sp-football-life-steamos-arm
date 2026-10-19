@@ -1,12 +1,18 @@
 #!/bin/bash
 # SP Football Life 2026 -> SteamOS ARM (tested: Konkr Pocket Fit, SM8650/Adreno 750, Box64 0.4.5)
 # Makes a PRE-INSTALLED copy of the game run, without Lutris. Usage:
-#   ./install-spfl26.sh ["/path/to/SP Football Life 2026"]      (default: ~/Games/SP Football Life 2026)
-# Safe to re-run. Run it from Desktop Mode (Konsole). Needs internet (~450 MB download, once).
+#   ./install-spfl26.sh ["/path/to/SP Football Life 2026"]
+# Without argument it finds the game in ~/Games or on a microSD card (asks if it is in both).
+# Safe to re-run; run it again after moving the game folder. Run it from Desktop Mode (Konsole).
+# Needs internet (~450 MB download, once).
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-GAME_DIR="${1:-$HOME/Games/SP Football Life 2026}"
+INTERNAL_DIR="$HOME/Games/SP Football Life 2026"
+# SteamOS mounts a (non-boot) card at /run/media/<user>/<label> (older builds: /run/media/<label>)
+CARD_SEARCH=(/run/media/*/*/"Non-Steam Games/SP Football Life 2026" /run/media/*/"Non-Steam Games/SP Football Life 2026"
+             /run/media/*/*/"Games/SP Football Life 2026" /run/media/*/"Games/SP Football Life 2026"
+             /run/media/*/*/"SP Football Life 2026" /run/media/*/"SP Football Life 2026")
 PROTON_TAG="GE-Proton9-27"
 PROTON_URL="https://github.com/GloriousEggroll/proton-ge-custom/releases/download/$PROTON_TAG"
 TOOLS_DIR="$HOME/x86ge"
@@ -22,7 +28,35 @@ say "Checking system"
 command -v box64 >/dev/null || die "box64 not found. This guide needs the SteamOS ARM image that ships Box64."
 grep -q '^enabled' /proc/sys/fs/binfmt_misc/box64 2>/dev/null || die "Box64 binfmt is not enabled (x86 programs can't be run directly)."
 command -v curl >/dev/null && command -v python3 >/dev/null || die "curl and python3 are required."
-[ -f "$GAME_DIR/FL_2026.exe" ] || die "FL_2026.exe not found in: $GAME_DIR  (pass the game folder as argument)"
+
+say "Looking for the game folder"
+cat <<EOF
+The game folder (the one with FL_2026.exe) must be copied BEFORE running this script, to one of:
+  1) Internal memory or microSD bootable SteamOS:  $INTERNAL_DIR
+  2) MicroSD card - not a bootable SteamOS microSD: /run/media/$USER/<card name>/Non-Steam Games/SP Football Life 2026
+     (also accepted on the card: Games/SP Football Life 2026, or SP Football Life 2026 at the top of the card)
+Moved it later? Just run this script again.
+EOF
+if [ -n "${1:-}" ]; then
+  GAME_DIR="$1"
+else
+  CARD_DIR=""
+  for d in "${CARD_SEARCH[@]}"; do [ -f "$d/FL_2026.exe" ] && { CARD_DIR="$d"; break; }; done
+  INT_OK=""; [ -f "$INTERNAL_DIR/FL_2026.exe" ] && INT_OK=1
+  if [ -n "$INT_OK" ] && [ -n "$CARD_DIR" ]; then
+    echo; echo "The game was found in both places:"
+    echo "  1) Internal memory or microSD bootable SteamOS: $INTERNAL_DIR"
+    echo "  2) MicroSD card - not a bootable SteamOS microSD: $CARD_DIR"
+    read -r -p "Which one should be used? [1/2] " a || die "No answer. Run it again and pass the game folder as argument."
+    case "$a" in 1) GAME_DIR="$INTERNAL_DIR";; 2) GAME_DIR="$CARD_DIR";; *) die "Please answer 1 or 2.";; esac
+  elif [ -n "$INT_OK" ]; then GAME_DIR="$INTERNAL_DIR"
+  elif [ -n "$CARD_DIR" ]; then GAME_DIR="$CARD_DIR"
+  else die "Game not found in the places above. Copy the game folder there (is the microSD card inserted?), or pass it as argument:
+  ./install-spfl26.sh \"/path/to/SP Football Life 2026\""
+  fi
+fi
+[ -f "$GAME_DIR/FL_2026.exe" ] || die "FL_2026.exe not found in: $GAME_DIR"
+case "$GAME_DIR" in /run/media/*) echo "Using the game on the microSD card (keep the card inserted to play).";; esac
 echo "Game folder: $GAME_DIR"
 
 say "Installing $PROTON_TAG (x86_64 build, runs through Box64)"
@@ -137,7 +171,10 @@ def put_art(appid,art):
 for exe,label,adir in ((exe_game,b"SP Football Life 2026",art),(exe_set,b"SP Football Life 2026 - Settings",os.path.join(art,"settings") if os.path.isdir(os.path.join(art,"settings")) else art)):
     exe_q=('"%s"'%exe).encode(); appid_n=(zlib.crc32(exe_q+label)|0x80000000)&0xffffffff
     if exe_q in d:
-        print("Steam shortcut already present:",label.decode())
+        # keep StartDir in step with the game folder (it changes when the game is moved, e.g. to the microSD card)
+        pat=re.compile(rb"(\x01Exe\x00"+re.escape(exe_q)+rb"\x00\x01StartDir\x00)[^\x00]*\x00")
+        d=pat.sub(lambda m:m.group(1)+('"%s"'%start).encode()+b"\x00",d)
+        print("Steam shortcut already present:",label.decode(),"(start folder updated)")
     else:
         ids=[int(x) for x in re.findall(rb"\x00(\d+)\x00\x02appid\x00",d)]; idx=(max(ids)+1) if ids else 0
         e=(b"\x00"+str(idx).encode()+b"\x00\x02appid\x00"+struct.pack("<I",appid_n)+s(b"AppName",label)+s(b"Exe",exe_q)+s(b"StartDir",('"%s"'%start).encode())+s(b"icon",b"")+s(b"ShortcutPath",b"")+s(b"LaunchOptions",b"")
