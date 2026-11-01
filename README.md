@@ -126,8 +126,8 @@ The script does this (shown for 2026; for 2027 every `26`/`2026` becomes `27`/`2
 5. Installs the settings tool `~/Games/spfl26-settings.sh` (a copy of `spfl-settings.sh` set to that edition).
 6. Creates two Desktop icons and two non-Steam shortcuts (overlay off): **SP Football Life 2026** and
    **SP Football Life 2026 - Settings**. It installs the Steam library artwork from `artwork/2026/` (game) and `artwork/2026/settings/`
-   (Settings) under each shortcut's ID. There is no `artwork/2027/` yet: SP Football Life 2027 gets a generic icon and
-   no library images until you add that folder (same file names) or pick images in Steam. Existing images are never overwritten, so you can replace them later with the
+   (Settings) under each shortcut's ID. For 2027 it uses `artwork/2027/` (made for this project, see
+   `artwork/README.md`; `python3 artwork/make-artwork.py 2028` makes a plain set for a later edition). Existing images are never overwritten, so you can replace them later with the
    Decky SteamGridDB plugin.
 
 ### Why GE-Proton 9 + Box64 (don't "upgrade")
@@ -147,7 +147,7 @@ hooks this game relies on, so stay on 9.x.
 ## License
 
 The script and documentation are released under the [MIT License](LICENSE): use, copy, modify and share freely.
-The images in `artwork/` are **not** covered by it (third-party artwork, see `artwork/README.md`).
+The images in `artwork/2026/` are **not** covered by it (third-party artwork, see `artwork/README.md`); the `artwork/2027/` set was made for this project: its grid, portrait and hero images use Wikimedia Commons photos and are CC BY-SA 4.0 (credits in `artwork/2027/CREDITS.md`); the rest of it is MIT.
 SP Football Life 2026 / 2027 itself is not included and is not part of this project; get it from SmokePatch.
 This project is not affiliated with SmokePatch, Konami or Valve.
 

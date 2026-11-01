@@ -11,4 +11,14 @@ They were created by third parties (SteamGridDB community artists / game rights 
 - You can delete this folder: `install-spfl.sh` simply skips the artwork step, and you can pick your own
   images in Steam or with the Decky SteamGridDB plugin.
 
-For another edition, add a folder named after its year (e.g. `2027/`, plus `2027/settings/`) with the same file names.
+The `2027/` set was made for this project:
+- `grid.png`, `portrait.png`, `hero.png` show seven players cut out of Wikimedia Commons photos by Bryan Berlin
+  (CC BY-SA 4.0), placed on an original stadium drawing. These three images are licensed **CC BY-SA 4.0**; photo credits
+  and links are in `2027/CREDITS.md`. Rebuild them with `compose-players.py` (see the notes at the top of that file).
+- `logo.png`, `icon.png` and everything in `2027/settings/` were drawn from scratch by `make-artwork.py` (no third-party
+  images) and are covered by this repository's MIT license like the scripts.
+
+To make a set for another edition: `python3 artwork/make-artwork.py 2028` (needs Pillow and the Fira Sans fonts; it draws
+the plain stadium version with no players). Careful: `make-artwork.py 2027` would replace the 2027 player images with
+the plain version. Any folder named after a year (e.g. `2028/`, plus `2028/settings/`) with the same file names is picked
+up by the installer.
