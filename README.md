@@ -1,8 +1,9 @@
 # SP Football Life 2026 / 2027 on SteamOS ARM (Konkr Pocket Fit, AYN Odin 2 and similar)
 
 Run a **copy of SP Football Life 2026 or 2027 you already have** (SmokePatch, `FL_2026.exe` / `FL_2027.exe`) on an ARM handheld
-running SteamOS, without Lutris. Tested with 2026 on the Konkr Pocket Fit Gen3 (Snapdragon SM8650, Adreno 750) and with 2027 on
-the AYN Odin 2 (Snapdragon SM8550, Adreno 740; game on the microSD card): menus, matches, Sider mods and the built-in controller
+running SteamOS, without Lutris (you can copy the pre-installed folder from your Windows PC).
+Tested with SP Football Life 2026 on the Konkr Pocket Fit Gen3 (Snapdragon SM8650, Adreno 750! with game on the SteamOS partition) and with SP Football Life 2027 on
+the AYN Odin 2 (Snapdragon SM8550, Adreno 740; with the game on the microSD card): menus, matches, Sider mods and the built-in controller
 all work in **Game Mode**. Both editions use the same setup (same engine, PES 2021, same Sider loader).
 
 Both editions can be installed side by side. Each one gets its own Wine prefix (so saves and settings stay separate), launcher,
